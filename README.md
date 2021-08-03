@@ -1,10 +1,10 @@
-# libostree
+# cpdf
 
-[![CI](../..//workflows/CI/badge.svg?branch=master)](../../actions?query=workflow%3ACI+branch%3Amaster)
+[![CI](../..//workflows/CI/badge.svg?branch=main)](../../actions?query=workflow%3ACI+branch%3Amain)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
 
-[rez] package to install [libostree].
+[rez] package to install [cpdf].
 
 Here are some beginners instructions on how to use this repository.
 
@@ -17,13 +17,13 @@ Here are some beginners instructions on how to use this repository.
 1. Open terminal in (extracted) repository folder,
    run `rez build --install`
 
-libostree should now be installed as a [rez] package named `libostree`.
+cpdf should now be installed as a [rez] package named `cpdf`.
 
 ## Usage
 
 Since this is a library, it is typically used as a `build_requires`.
 
-- Libraries are available from `"$REZ_LIBOSTREE_ROOT"/lib`
+- Libraries are available from `"$REZ_CPDF_ROOT"/lib`
 - `pkgconfig` should also pick that path up from the exported `PKG_CONFIG_PATH`
 
 
@@ -46,5 +46,5 @@ Want more rez packages? Checkout [my GitHub repositories][j0yu-rez-packages]
 [rez]: https://github.com/nerdvegas/rez
 [requirement]: https://github.com/nerdvegas/rez/wiki/Package-Definition-Guide#requires
 [j0yu-rez-packages]: https://github.com/j0yu?tab=repositories&q=topic%3Arez+topic%3Apackage
-[libostree]: https://github.com/ostreedev/ostree
+[cpdf]: https://github.com/coherentgraphics/cpdf-binaries
 [PEP 540 local version segments]: https://www.python.org/dev/peps/pep-0440/#local-version-segments

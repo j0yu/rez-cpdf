@@ -1,52 +1,38 @@
-name = "libostree"
+name = "cpdf"
 
-__version__ = "2021.3"
+__version__ = "2.4"
 version = __version__ + "+local.1.0.0"
 
-variants = [["os-CentOS-7", "arch-x86_64"]]
+variants = [["platform-linux", "arch-x86_64"]]
 
-relocatable = False
-
-build_requires = ["git-2"]
+relocatable = True
 
 build_command = r"""
 set -euf -o pipefail
 
-cp "$REZ_BUILD_SOURCE_PATH"/Dockerfile "$REZ_BUILD_SOURCE_PATH"/entrypoint.sh .
+case "$REZ_BUILD_VARIANT_INDEX" in
+    0) VARIANT=Linux-Intel-64bit;;
+    *)
+        echo Not implemented
+        exit 1
+        ;;
+esac
 
-IMAGE_ID_FILE="$(readlink -f DockerImageID)"
-# In rez resolved version:
-# - REZ_OS_MAJOR_VERSION = centos
-# - REZ_OS_MINOR_VERSION = 7
-docker build --rm \
-    --build-arg CENTOS_MAJOR="$REZ_OS_MINOR_VERSION" \
-    --iidfile "$IMAGE_ID_FILE" \
-    "$REZ_BUILD_PATH"
-
-[ -t 1 ] && CONTAINER_ARGS=("--tty") || CONTAINER_ARGS=()
-CONTAINER_ARGS+=("--env" "INSTALL_DIR={install_dir}")
-CONTAINER_ARGS+=("--env" "VERSION={version}")
-CONTAINER_ARGS+=("--env" REZ_GIT_ROOT="$REZ_GIT_ROOT")
-CONTAINER_ARGS+=("--volume" "$REZ_GIT_ROOT":"$REZ_GIT_ROOT":ro)
-CONTAINER_ARGS+=("$(cat $IMAGE_ID_FILE)")
-
+URL=https://github.com/coherentgraphics/cpdf-binaries/archive/refs/tags
+URL+="/v{version}.tar.gz"
+CURL_FLAGS=("-L")
+[ -t 1 ] && CURL_FLAGS+=("-#") || CURL_FLAGS+=("-sS")
 
 if [ $REZ_BUILD_INSTALL -eq 1 ]
 then
-    CONTAINER_ID=$(docker create "{CONTAINER_ARGS}")
-    docker start -ia "$CONTAINER_ID"
-    docker cp "$CONTAINER_ID":"{install_dir}"/. "{install_dir}"/
-    docker rm "$CONTAINER_ID"
+    curl "{CURL_FLAGS}" "$URL" | tar -xz --strip-components=2 \
+        -C "$REZ_BUILD_INSTALL_PATH" "cpdf-binaries-{version}"/"$VARIANT"/cpdf
 fi
 """.format(
     version=__version__,
-    install_dir="${{REZ_BUILD_INSTALL_PATH:-/usr/local}}",
-    CONTAINER_ARGS="${{CONTAINER_ARGS[@]}}",
+    CURL_FLAGS="${{CURL_FLAGS[@]}}",
 )
 
 
 def commands():
-    import os.path
-
-    env.PATH.append(os.path.join("{root}", "bin"))
-    env.PKG_CONFIG_PATH.append(os.path.join("{root}", "lib", "pkgconfig"))
+    env.PATH.append("{root}")
